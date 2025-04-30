@@ -1,11 +1,10 @@
 {
   "name": "crud-api",
   "version": "1.0.0",
-  "main": "src/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "npm run build & node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "build": "webpack",
+    "start": "npm run build & node dist/server.js",
+    "dev": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -20,7 +19,15 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^22.15.3",
+    "nodemon": "^3.1.10",
+    "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "uuid": "^11.1.0"
   }
 }
