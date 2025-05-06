@@ -1,6 +1,12 @@
 import { UserData } from '../storage/users';
 
-export const validateUserData = ({ username, age, hobbies }: Omit<UserData, 'id'>): boolean => {
+type ValidateUserDataProps = Omit<UserData, 'id'>
+
+export const validateUserData = ({
+  username,
+  age,
+  hobbies
+}: ValidateUserDataProps): boolean => {
   if (!username || !age || !hobbies) return false;
 
   if (typeof username !== 'string') return false;
