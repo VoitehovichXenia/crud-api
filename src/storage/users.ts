@@ -1,6 +1,13 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, UUIDTypes } from 'uuid';
 
-export const users = [
+export type UserData = {
+  id: UUIDTypes
+  username: string
+  age: number
+  hobbies: string[] | []
+}
+
+export const users: UserData[] = [
   {
     username: 'johndoe',
     id: uuidv4(),
@@ -30,5 +37,11 @@ export const users = [
     id: uuidv4(),
     age: 20,
     hobbies: ['dancing']
+  },
+  {
+    username: 'streetwalker',
+    id: uuidv4(),
+    age: 60,
+    hobbies: []
   }
 ];

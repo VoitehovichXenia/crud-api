@@ -1,6 +1,7 @@
 import http, { IncomingMessage, ServerResponse } from 'http';
-import { validate } from 'uuid';
-import { users } from './storage/users';
+import { validate, v4 as uuidv4 } from 'uuid';
+import { UserData, users } from './storage/users';
+import { validateUserData } from './utils/validateUserData';
 
 const USERS_ROUTE = '/api/users';
 
@@ -40,6 +41,28 @@ const server = http.createServer((request: IncomingMessage, response: ServerResp
             response.end();
           }
         }
+      }
+    } else if (method === 'POST') {
+      let body = '';
+      request.on('data', chunk => {
+        body += chunk;
+      });
+
+      if (url === USERS_ROUTE) {
+        request.on('end', () => {
+          const { username, age, hobbies } = JSON.parse(body);
+          if (validateUserData({ username, age, hobbies })) {
+            const id = uuidv4();
+            const newUser: UserData = { id, username, age, hobbies };
+            users.push(newUser);
+            response.statusCode = 201;
+            response.end(JSON.stringify(newUser));
+          } else {
+            response.statusCode = 400;
+            response.statusMessage = 'User data is incorrect';
+            response.end();
+          }
+        });
       }
     } else {
       response.statusCode = 404;
