@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "webpack",
-    "start": "npm run build & node dist/server.js",
+    "start": "npm run build & node --env-file=.env dist/server.js",
     "dev": "webpack --watch",
     "lint": "npx eslint ."
   },
