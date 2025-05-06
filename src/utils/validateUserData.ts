@@ -1,4 +1,4 @@
-import { UserData } from '../storage/users';
+import { UserData } from '../server';
 
 type ValidateUserDataProps = Omit<UserData, 'id'>
 
