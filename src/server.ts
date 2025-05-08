@@ -2,6 +2,8 @@ import http, { IncomingMessage, ServerResponse } from 'http';
 import { validate, v4 as uuidv4, UUIDTypes } from 'uuid';
 import { validateUserData } from './utils/validateUserData';
 import { handleResponse } from './handlers/handleResponse';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export type UserData = {
   id: UUIDTypes
@@ -90,7 +92,7 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
       }
     } else if (url?.startsWith(`${USERS_ROUTE}/`)) {
       const urlPath = url.split('/');
-      if (urlPath.length !== 4) throw new Error(`404: Requested route ${url} doesn't exist`)
+      if (urlPath.length !== 4) throw new Error(`404: Requested route ${url} doesn't exist`);
       const userID = urlPath[urlPath.length - 1];
       const isIdValid = validate(userID);
       if (!isIdValid) {
@@ -116,17 +118,17 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
           try {
             const user = users.find(userData => userData.id === userID);
             if (user) {
-              const { username, age, hobbies } = JSON.parse(body)
+              const { username, age, hobbies } = JSON.parse(body);
               if (validateUserData({ username, age, hobbies })) {
-                const newUser = { ...user, username, age, hobbies }
-                const index = users.findIndex(userData => userData.id === userID)
-                users[index] = newUser
+                const newUser = { ...user, username, age, hobbies };
+                const index = users.findIndex(userData => userData.id === userID);
+                users[index] = newUser;
 
                 handleResponse({
                   res,
                   statusCode: 201,
                   data: JSON.stringify(newUser)
-                })
+                });
               } else {
                 handleResponse({
                   res,
@@ -140,11 +142,11 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
           } catch {
             handleResponse({ res, statusCode: 404, statusMessage: 'JSON user data is incorrect' });
           }
-        })
+        });
       } else if (method === 'DELETE' && userID && isIdValid) {
         const user = users.find(userData => userData.id === userID);
         if (user) {
-          users = users.filter(user => user.id !== userID)
+          users = users.filter(user => user.id !== userID);
           handleResponse({ res, statusCode: 204 });
         } else {
           handleResponse({ res, statusCode: 404, statusMessage: `User with id: ${userID} doesn't exist` });
@@ -155,11 +157,11 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
     } else {
       handleResponse({ res, statusCode: 404, statusMessage: `Requested route ${url} doesn't exist` });
     }
-  } catch (err: any) {
-    if (err.message.startsWith('404:')) {
-      handleResponse({ res, statusCode: 404, statusMessage: err.message.replace('404: ', '') })
+  } catch (err) {
+    if ((err as { message: string })?.message?.startsWith('404:')) {
+      handleResponse({ res, statusCode: 404, statusMessage: (err as { message: string }).message.replace('404: ', '') });
     } else {
-      handleResponse({ res, statusCode: 500, statusMessage: `Internal server error: ${err.message}` });
+      handleResponse({ res, statusCode: 500, statusMessage: `Internal server error: ${(err as { message: string }).message}` });
     }
   }
 });
