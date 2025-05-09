@@ -12,48 +12,11 @@ export type UserData = {
   hobbies: string[] | []
 }
 
-let users: UserData[] = [
-  {
-    username: 'johndoe',
-    id: uuidv4(),
-    age: 27,
-    hobbies: ['playing guitar', 'sining', 'gym']
-  },
-  {
-    username: 'janedoe',
-    id: uuidv4(),
-    age: 42,
-    hobbies: ['oil painting', 'stretching']
-  },
-  {
-    username: 'roten_tomato',
-    id: uuidv4(),
-    age: 42,
-    hobbies: ['cinematography', 'sining', 'swimming']
-  },
-  {
-    username: 'fluffyemokitty',
-    id: uuidv4(),
-    age: 18,
-    hobbies: ['sining', 'dancing']
-  },
-  {
-    username: 'unique_diamond',
-    id: uuidv4(),
-    age: 20,
-    hobbies: ['dancing']
-  },
-  {
-    username: 'streetwalker',
-    id: uuidv4(),
-    age: 60,
-    hobbies: []
-  }
-];
+export let users: UserData[] = [];
 
 const USERS_ROUTE = '/api/users';
 
-const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
+export const server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
   const url = req.url?.toLowerCase();
   const method = req.method;
 
@@ -166,6 +129,8 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
   }
 });
 
-server.listen(Number(process.env.PORT), 'localhost', () => {
-  console.log(`Server has been started on http://localhost:${process.env.PORT}`);
-});
+if (require.main === module) {
+  server.listen(Number(process.env.PORT), 'localhost', () => {
+    console.log(`Server has been started on http://localhost:${process.env.PORT}`);
+  });
+}
