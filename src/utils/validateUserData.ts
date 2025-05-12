@@ -1,4 +1,4 @@
-import { UserData } from '../server';
+import { UserData } from '../handlers/handleServerRequest';
 
 type ValidateUserDataProps = Omit<UserData, 'id'>
 

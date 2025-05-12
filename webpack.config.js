@@ -2,24 +2,24 @@ const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  entry: './src/server.ts',              // Entry point for your app
-  target: 'node',                        // Set target to 'node' for a backend app
-  externals: [nodeExternals()],          // Exclude node_modules from bundling
+  entry: './src/index.ts',
+  target: 'node',
+  externals: [nodeExternals()],
   module: {
     rules: [
       {
-        test: /\.ts$/,                   // Process .ts files
-        use: 'ts-loader',                // Use ts-loader to transpile TypeScript
+        test: /\.ts$/,
+        use: 'ts-loader',
         exclude: /node_modules/,
       }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js'],         // Resolve both .ts and .js files
+    extensions: ['.ts'],
   },
   output: {
-    filename: 'server.js',              // Output file for the bundled server
-    path: path.resolve(__dirname, 'dist'), // Output directory
+    filename: 'server.js',
+    path: path.resolve(__dirname, 'dist'),
   },
   mode: 'development',
 }

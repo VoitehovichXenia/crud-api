@@ -1,13 +1,16 @@
 
 import request from 'supertest';
-import { server } from './server';
+import { createServer } from './handlers/createServer';
+import { Server } from 'http';
 
 describe('TEST CRUD API', () => {
+  let server: Server;
   let userId: string;
   const newUser = { username: 'new_user', age: 20, hobbies: [] };
   const updatedUser = { username: 'new_user_updated', age: 21, hobbies: ['swimming'] };
 
   beforeAll((done) => {
+    server = createServer({ port: 4000, isTestMode: true });
     server.listen(4000, done);
   });
 
