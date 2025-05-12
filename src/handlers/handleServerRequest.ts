@@ -95,9 +95,15 @@ export const handleServerRequest = async (req: IncomingMessage, res: ServerRespo
               } else {
                 handleResponse({ res, statusCode: 404, statusMessage: `User with id: ${userID} doesn't exist` });
               }
-            } else throw new Error();
-          } catch {
-            handleResponse({ res, statusCode: 400, statusMessage: 'User data is invalid' });
+            } else throw new Error('400: User data is invalid');
+          } catch (err) {
+            handleErrors(
+              (err as { message: string }).message.startsWith('400:')
+                ? 400
+                : 500,
+              (err as { message: string }).message,
+              res
+            );
           }
         });
         return;
