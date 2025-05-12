@@ -3,6 +3,7 @@ import { validate, UUIDTypes } from 'uuid';
 import { handleResponse } from './handleResponse';
 import { Users } from '../storage/users';
 import { validateUserData } from '../utils/validateUserData';
+import { handleErrors } from './handleErrors';
 
 export type UserData = {
   id: UUIDTypes
@@ -42,23 +43,27 @@ export const handleServerRequest = async (req: IncomingMessage, res: ServerRespo
                   data: JSON.stringify(newUser)
                 });
               }
-            } else {
-              handleResponse({ res, statusCode: 400, statusMessage: 'User data is invalid' });
-            }
-          } catch {
-            handleResponse({ res, statusCode: 404, statusMessage: 'JSON user data is incorrect' });
+            } else throw new Error('400: User data is invalid');
+          } catch (err) {
+            handleErrors(
+              (err as { message: string }).message.startsWith('400:')
+                ? 400
+                : 500,
+              (err as { message: string }).message,
+              res
+            );
           }
         });
         return;
       }
 
-      handleResponse({ res, statusCode: 404, statusMessage: `${method} method is not supported on the ${url} route` });
+      handleResponse({ res, statusCode: 404, statusMessage: `Route ${method} ${url} doesn't exist` });
       return;
     }
     
     if (url?.startsWith(`${USERS_ROUTE}/`)) {
       const urlPath = url.split('/');
-      if (urlPath.length !== 4) throw new Error(`404: Requested route ${url} doesn't exist`);
+      if (urlPath.length !== 4) throw new Error(`404: Requested route ${method} ${url} doesn't exist`);
       const userID = urlPath[urlPath.length - 1];
       const isIdValid = validate(userID);
       if (!isIdValid) {
@@ -88,13 +93,11 @@ export const handleServerRequest = async (req: IncomingMessage, res: ServerRespo
               if (updatedUser) {
                 handleResponse({ res, statusCode: 201, data: JSON.stringify(updatedUser) });
               } else {
-                handleResponse({ res, statusCode: 400, statusMessage: 'User data is invalid' });
+                handleResponse({ res, statusCode: 404, statusMessage: `User with id: ${userID} doesn't exist` });
               }
-            } else {
-              handleResponse({ res, statusCode: 404, statusMessage: `User with id: ${userID} doesn't exist` });
-            }
+            } else throw new Error();
           } catch {
-            handleResponse({ res, statusCode: 404, statusMessage: 'JSON user data is incorrect' });
+            handleResponse({ res, statusCode: 400, statusMessage: 'User data is invalid' });
           }
         });
         return;
@@ -110,17 +113,19 @@ export const handleServerRequest = async (req: IncomingMessage, res: ServerRespo
         return;
       }
 
-      handleResponse({ res, statusCode: 404, statusMessage: `${method} method is not supported on the ${url} route` });
+      handleResponse({ res, statusCode: 404, statusMessage: `Requested route ${method} ${url} doesn't exist` });
       return;
     }
 
-    handleResponse({ res, statusCode: 404, statusMessage: `Requested route ${url} doesn't exist` });
+    handleResponse({ res, statusCode: 404, statusMessage: `Requested route ${method} ${url} doesn't exist` });
     return;
   } catch (err) {
-    if ((err as { message: string })?.message?.startsWith('404:')) {
-      handleResponse({ res, statusCode: 404, statusMessage: (err as { message: string }).message.replace('404: ', '') });
-    } else {
-      handleResponse({ res, statusCode: 500, statusMessage: `Internal server error: ${(err as { message: string }).message}` });
-    }
+    handleErrors(
+      (err as { message: string }).message.startsWith('404:')
+        ? 404
+        : 500,
+      (err as { message: string }).message,
+      res
+    );
   }
 };
